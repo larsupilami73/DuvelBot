@@ -1,0 +1,65 @@
+<!DOCTYPE HTML><html>
+  <head>
+    <title>DuvelBot</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="style.css">
+  </head>
+  <body>
+    <p><img src="duvel"  class="logo"></p>
+    <p><img id="camimage" class="cameraimage"></p>
+    <button class="button" onmousedown="toggleCheckbox('forward');" ontouchstart="toggleCheckbox('forward');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">FORWARD</button>
+    <br>
+    <button class="button button2" onmousedown="toggleCheckbox('left');" ontouchstart="toggleCheckbox('left');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">LEFT</button><button class="button button2" onmousedown="toggleCheckbox('right');" ontouchstart="toggleCheckbox('right');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">RIGHT</button>
+    <br>
+    <button class="button" onmousedown="toggleCheckbox('backward');" ontouchstart="toggleCheckbox('backward');" onmouseup="toggleCheckbox('stop');" ontouchend="toggleCheckbox('stop');">BACKWARD</button>
+    
+    <br>
+    <input id="slide" type="range" min="0" max="100" step="1" value="0" class="slider"><strong><output id="sliderAmount"></output></strong>
+    <br>
+    <br>
+    <input type="radio" id="slowspeed" name="speed" onclick="toggleCheckbox('slowspeed');">
+    <label for="slowspeed"><strong>SLOW</strong></label>
+    <input type="radio" id="normalspeed" name="speed" onclick="toggleCheckbox('normalspeed');" checked="checked">
+    <label for="normalspeed"><strong>NORMAL</strong></label>
+    <input type="radio" id="fastspeed" name="speed" onclick="toggleCheckbox('fastspeed');">
+    <label for="fastspeed"><strong>FAST</strong></label>
+   <script>
+    var slide = document.getElementById('slide'),
+    sliderDiv = document.getElementById("sliderAmount");
+    slide.onchange = function() {
+      var xhr = new XMLHttpRequest();
+      xhr.open("GET", "/LED/" + this.value, true);
+      xhr.send();
+      sliderDiv.innerHTML = this.value;
+      }
+   
+   function toggleCheckbox(x) {
+     //alert(" I am here!");
+     var xhr = new XMLHttpRequest();
+     xhr.open("GET", "/" + x, true);
+     xhr.send();
+     //could do something with the response too when ready
+   }
+   
+    setInterval(function(){
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("GET", "/CAMERA", true);
+      xhttp.responseType = "blob";
+      xhttp.timeout = 500;
+      xhttp.ontimeout = function(){};
+      xhttp.onload = function(e){
+        if (this.readyState == 4 && this.status == 200) 
+        { 
+         //see: https://stackoverflow.com/questions/7650587/using-javascript-to-display-a-blob
+         //https://www.html5rocks.com/en/tutorials/file/xhr2/
+         var urlCreator = window.URL || window.webkitURL;
+         var imageUrl = urlCreator.createObjectURL(this.response); //create an object from the blob  
+         document.querySelector("#camimage").src = imageUrl;  
+         urlCreator.revokeObjectURL(imageurl)            
+        }
+      };
+      xhttp.send();
+    }, 250);
+  </script>
+  </body>  
+</html>
